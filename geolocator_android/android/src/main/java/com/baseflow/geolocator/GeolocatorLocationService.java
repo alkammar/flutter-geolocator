@@ -138,7 +138,7 @@ public class GeolocatorLocationService extends Service {
       Log.d(TAG, "Service already in foreground mode.");
       changeNotificationOptions(options);
     } else {
-      Log.d(TAG, "Start service in foreground mode.");
+      Log.d(TAG, "Starting service in foreground mode.");
 
       backgroundNotification =
           new BackgroundNotification(
@@ -154,7 +154,7 @@ public class GeolocatorLocationService extends Service {
   @SuppressWarnings("deprecation")
   public void disableBackgroundMode() {
     if (isForeground) {
-      Log.d(TAG, "Stop service in foreground.");
+      Log.d(TAG, "Stopping service in foreground.");
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
         stopForeground(ONGOING_NOTIFICATION_ID);
       } else {
