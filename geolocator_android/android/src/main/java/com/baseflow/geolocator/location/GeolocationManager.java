@@ -41,7 +41,7 @@ public class GeolocationManager
       listener.onLocationServiceError(ErrorCodes.locationServicesDisabled);
     }
 
-    LocationClient locationClient = createLocationClient(context, false, null);
+    LocationClient locationClient = createLocationClient(context, true, null);
     locationClient.isLocationServiceEnabled(listener);
   }
 

@@ -1,10 +1,11 @@
 package com.baseflow.geolocator.location;
 
+import static android.location.LocationManager.GPS_PROVIDER;
+
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
-import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -16,8 +17,6 @@ import androidx.annotation.Nullable;
 
 import com.baseflow.geolocator.errors.ErrorCallback;
 import com.baseflow.geolocator.errors.ErrorCodes;
-
-import java.util.List;
 
 class LocationManagerClient implements LocationClient, LocationListener {
 
@@ -71,47 +70,6 @@ class LocationManagerClient implements LocationClient, LocationListener {
     if (isNewer && !isSignificantlyLessAccurate && isFromSameProvider) return true;
 
     return false;
-  }
-
-  private static String getBestProvider(
-      LocationManager locationManager, LocationAccuracy accuracy) {
-    Criteria criteria = new Criteria();
-
-    criteria.setBearingRequired(false);
-    criteria.setAltitudeRequired(false);
-    criteria.setSpeedRequired(false);
-
-    switch (accuracy) {
-      case lowest:
-        criteria.setAccuracy(Criteria.NO_REQUIREMENT);
-        criteria.setHorizontalAccuracy(Criteria.NO_REQUIREMENT);
-        criteria.setPowerRequirement(Criteria.NO_REQUIREMENT);
-        break;
-      case low:
-        criteria.setAccuracy(Criteria.ACCURACY_COARSE);
-        criteria.setHorizontalAccuracy(Criteria.ACCURACY_LOW);
-        criteria.setPowerRequirement(Criteria.NO_REQUIREMENT);
-        break;
-      case medium:
-        criteria.setAccuracy(Criteria.ACCURACY_COARSE);
-        criteria.setHorizontalAccuracy(Criteria.ACCURACY_MEDIUM);
-        criteria.setPowerRequirement(Criteria.POWER_MEDIUM);
-        break;
-      default:
-        criteria.setAccuracy(Criteria.ACCURACY_FINE);
-        criteria.setHorizontalAccuracy(Criteria.ACCURACY_HIGH);
-        criteria.setPowerRequirement(Criteria.POWER_HIGH);
-        break;
-    }
-
-    String provider = locationManager.getBestProvider(criteria, true);
-
-    if (provider.trim().isEmpty()) {
-      List<String> providers = locationManager.getProviders(true);
-      if (providers.size() > 0) provider = providers.get(0);
-    }
-
-    return provider;
   }
 
   private static float accuracyToFloat(LocationAccuracy accuracy) {
@@ -176,15 +134,7 @@ class LocationManagerClient implements LocationClient, LocationListener {
     this.positionChangedCallback = positionChangedCallback;
     this.errorCallback = errorCallback;
 
-    LocationAccuracy locationAccuracy =
-        this.locationOptions != null ? this.locationOptions.getAccuracy() : LocationAccuracy.best;
-
-    this.currentLocationProvider = getBestProvider(this.locationManager, locationAccuracy);
-
-    if (this.currentLocationProvider.trim().isEmpty()) {
-      errorCallback.onError(ErrorCodes.locationServicesDisabled);
-      return;
-    }
+    this.currentLocationProvider = GPS_PROVIDER;
 
     long timeInterval = 0;
     float distanceFilter = 0;
@@ -235,7 +185,9 @@ class LocationManagerClient implements LocationClient, LocationListener {
   }
 
   @Override
-  public void onProviderEnabled(String provider) {}
+  public void onProviderEnabled(String provider) {
+
+  }
 
   @SuppressLint("MissingPermission")
   @Override
